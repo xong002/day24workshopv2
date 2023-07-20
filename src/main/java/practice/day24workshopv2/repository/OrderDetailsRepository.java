@@ -3,6 +3,8 @@ package practice.day24workshopv2.repository;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -40,5 +42,12 @@ public class OrderDetailsRepository {
         jdbcTemplate.update(psc, generatedKey);
         return generatedKey.getKey().intValue();
 
+    }
+
+    public int[] batchInsertDetails(List<Details> detailsList){
+        List<Object[]> objList = detailsList.stream().map(d -> new Object[] {d.getProduct(), d.getUnitPrice(), d.getDiscount(), d.getQuantity()
+        , d.getOrderId()}).collect(Collectors.toList());
+
+        return jdbcTemplate.batchUpdate(INSERT_DETAILS_SQL, objList);
     }
 }
